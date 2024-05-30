@@ -20,7 +20,7 @@ pnpm install @kinde/jwt-validator
 ```js
 import { validateToken } from "@kinde/jwt-validator";
 
-const isValid: Boolean = validateToken({
+const validationResult: jwtValidationResponse = await validateToken({
   token: "eyJhbGc...",
   domain: "http://mybusiness.kinde.com"
 });
