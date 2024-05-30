@@ -18,7 +18,7 @@ pnpm install @kinde/jwt-validator
 ## Usage
 
 ```js
-import { validateToken } from "@kinde/jwt-validator";
+import { validateToken, type jwtValidationResponse } from "@kinde/jwt-validator";
 
 const validationResult: jwtValidationResponse = await validateToken({
   token: "eyJhbGc...",
