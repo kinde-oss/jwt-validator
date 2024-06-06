@@ -1,7 +1,8 @@
 // setToken.test.ts
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { createHmac } from "crypto";
 import { validateToken } from "./main";
+import * as utils from "./utils";
 
 function base64UrlEncode(str: string) {
   return Buffer.from(str)
@@ -79,6 +80,33 @@ describe("Validate token", () => {
       valid: false,
       message: "signature verification failed",
     });
+  });
+
+  it("use cache when JWKS has already been fetched", async () => {
+    utils.JWKSCache.clear();
+
+    const getJWKSMock = vi.spyOn(utils, "getJWKS");
+
+    const token =
+      "eyJhbGciOiJSUzI1NiIsImtpZCI6IjRjOmZhOjllOmQ2OjQ3OjIzOmI3OjM5OmM3OjhmOjk3OjI4OjQ1OmExOjg0OjM1IiwidHlwIjoiSldUIn0.eyJkYXRhIjp7InVzZXIiOnsiZW1haWwiOiJkYW5pZWxAa2luZGUuY29tIiwiZmlyc3RfbmFtZSI6IkRhbmllbCIsImlkIjoia3BfNjViMjhkNzFiYmExNGZhMzgwZDU2ZDJkOGQzNTAzZGEiLCJpc19wYXNzd29yZF9yZXNldF9yZXF1ZXN0ZWQiOmZhbHNlLCJpc19zdXNwZW5kZWQiOmZhbHNlLCJsYXN0X25hbWUiOiJSaXZlcnMiLCJvcmdhbml6YXRpb25zIjpbeyJjb2RlIjoib3JnXzU5MGQ3ZjFhODZhIiwicGVybWlzc2lvbnMiOm51bGwsInJvbGVzIjpudWxsfV0sInBob25lIjpudWxsLCJ1c2VybmFtZSI6ImRhbmllbCJ9fSwiZXZlbnRfaWQiOiJldmVudF8wMThmMzMxYTMxNzhmN2ZlZjI4NGI5NWZlNjc3MDM4NCIsInNvdXJjZSI6ImFkbWluIiwidGltZXN0YW1wIjoiMjAyNC0wNS0wMVQxNzo0MTo0NS41OTIxNDUrMTA6MDAiLCJ0eXBlIjoidXNlci51cGRhdGVkIn0.hAxfcxDNnzN8_U7sovti71NElh5pqVe6UEFKgVD1ZygVJUdEhmjYQOOSr6Aixj2ySs_hujZBvCRWeqG6jNPYbHRiV5kx0XaL6g3cW1DCoqpTpkxXtjf18HNYHCJmsUqMiSwfYpmVcI7kaIDfd0XwhWWH5gRdjAAMDneEwMKANklTzR_g_kIl5cVW5eVWntC4rFsSjRVvGSNb-OMsy2GJLWXUF8fc8Qru56VkJImeOE6ZOMi6wBhtx7HhOZEcEFgQjRvHeoQKdVmEE3BRUnO_LXTMMSjvP_kyfrS4JMaGWHc6mc8k1hZo_maASLSuXMF8882LZnr96cJFMHj8irRAug";
+
+    const tokenPayload = {
+      token,
+      domain: "https://danielkinde.kinde.com",
+    };
+
+    await validateToken(tokenPayload);
+    await validateToken(tokenPayload);
+
+    // Provide an invalid token to ensure that the token re-recieved from the server
+    await validateToken({
+      ...tokenPayload,
+      token:
+        "eyJhbGciOiJSUzI1NiIsImtpZCI6IjRjOmZhOjllOmQ2OjQ3OjIzOmI3OjM5OmM3OjhmOjk3OjI4OjQ1OmExOjg0OjM1IiwidHlwIjoiSldUIn0.eyJkYXRhIjp7InVzZXIiOnsiZW1haWwiOiJtZSt3ZWJvb2tAZGFuaWVscml2ZXJzLmNvbSIsImZpcnN0X25hbWUiOiJhYSIsImlkIjoia3BfYmM2YjI4MTczZDZkNGRmYWI1NjU3NTg4NWIwMjE0YjEiLCJpc19wYXNzd29yZF9yZXNldF9yZXF1ZXN0ZWQiOmZhbHNlLCJpc19zdXNwZW5kZWQiOmZhbHNlLCJsYXN0X25hbWUiOiJhaGEiLCJvcmdhbml6YXRpb25zIjpbeyJjb2RlIjoib3JnXzU5MGQ3ZjFhODZhIiwicGVybWlzc2lvbnMiOm51bGwsInJvbGVzIjpudWxsfV0sInBob25lIjpudWxsLCJ1c2VybmFtZSI6bnVsbH19LCJldmVudF9pZCI6ImV2ZW50XzAxOGYyYTllNTkyZWNjZjUyMzI5MTgzYTQ1Y2QxOTU2Iiwic291cmNlIjoiYWRtaW4iLCJ0aW1lc3RhbXAiOiIyMDI0LTA0LTMwVDAyOjA5OjMxLjY0OTE2MisxMDowMCIsInR5cGUiOiJ1c2VyLnVwZGF0ZWQifQ.YIFd21Ek7R_hfpfEpAcwW5ebaDSDsT7TMYF5HTbg70CfWw36IDqKqQWKR6T1_vP0lI5s0xJlDptbjykvWfSm44fkz0LgjCWQhM_ENzTZiAa89pa2X1prjKH4vyS7lTqSCNXvCeYiAaFZSlr2X3s2aztASB4jGBDETziGCh_klNh4Gun3AcbkWOXz_QPm3YGNqgc3hYSBsLdOQbCQ_BxS2Wc60D3NAShVaodPrtOLC1bvY1vn_HucZHT9l-KuTKgY1st6D4er2K6DuHZaFBMMdvTaFQX5zN8OZltxeiucja4sg2vbtexryMdSdHY3y5Cz70dKWW6Ph2kHucK6xScQoQs",
+    });
+    await validateToken(tokenPayload);
+
+    expect(getJWKSMock).toHaveBeenCalledTimes(2);
   });
 
   it("token is present but not valid", async () => {
