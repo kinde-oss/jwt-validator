@@ -1,6 +1,5 @@
 // import { jwtVerify } from "jose";
 import { JWKSCache, getJWKS } from "./utils";
-import { jwtDecoder } from "@kinde/jwt-decoder"
 export type jwtValidationResponse = {
   valid: boolean;
   message: string;
@@ -20,12 +19,8 @@ async function verifyJwt(
     JWKS = await getJWKS(domain);
     JWKSCache.set(domain, JWKS);
   }
-  console.log('JWKS', JSON.stringify(JWKS))
-  // console.log('JWKS', jwtDecoder(JWKS)) 
 
   try {
-    // can you make this so it doesnt use jose
-    
     await jwtVerify(token, JSON.stringify(JWKS));
     return { valid: true, message: "Token is valid" };
   } catch (error) {
@@ -42,15 +37,14 @@ async function verifyJwt(
 async function jwtVerify(token: string, jwksJson: string) {
   const [headerEncoded, payloadEncoded, signatureEncoded] = token.split(".");
 
-  console.log("signatureEncoded", atob(headerEncoded))
+  console.log("signatureEncoded", headerEncoded)
+  console.log("signatureDecoded", atob(headerEncoded))
 
   const header = JSON.parse(atob(headerEncoded));
   const kid = header.kid;
 
   const jwks = JSON.parse(jwksJson);
   const jwk = findJWK(jwksJson, kid);
-
-  console.log("Found JWK:", jwk);
 
   if (!jwk || jwk.kty !== "RSA" || !jwk.n || !jwk.e || jwk.use !== "sig") {
     throw new Error("Invalid JWK RSA key");
@@ -152,7 +146,6 @@ function base64UrlToUint8Array(base64Url) {
 // }
 
 function base64UrlToBigInt(base64Url) {
-  console.log("Input Base64URL:", base64Url);
   base64Url = base64Url.replace(/[^A-Za-z0-9\-_]/g, '');
   base64Url += Array.from({ length: (4 - base64Url.length % 4) % 4 }, () => "=").join("");
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -165,8 +158,6 @@ function base64UrlToBigInt(base64Url) {
   }
 
   const hex = Array.from(binary, (c) => c.charCodeAt(0).toString(16).padStart(2, "0")).join("");
-
-  console.log("Decoded Hex String:", hex);
 
   if (hex.toLowerCase() === "ffffffffffffffff" || hex.toLowerCase() === "7ff0000000000000") {
     throw new Error("Decoded value represents NaN or Infinity");
