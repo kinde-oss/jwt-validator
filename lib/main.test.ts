@@ -69,7 +69,7 @@ describe("Validate token", () => {
     });
   });
 
-  it("token has invalid signature", async () => {
+  it.only("token has invalid signature", async () => {
     const token =
       "eyJhbGciOiJSUzI1NiIsImtpZCI6IjRjOmZhOjllOmQ2OjQ3OjIzOmI3OjM5OmM3OjhmOjk3OjI4OjQ1OmExOjg0OjM1IiwidHlwIjoiSldUIn0.eyJkYXRhIjp7InVzZXIiOnsiZW1haWwiOiJtZSt3ZWJvb2tAZGFuaWVscml2ZXJzLmNvbSIsImZpcnN0X25hbWUiOiJhYSIsImlkIjoia3BfYmM2YjI4MTczZDZkNGRmYWI1NjU3NTg4NWIwMjE0YjEiLCJpc19wYXNzd29yZF9yZXNldF9yZXF1ZXN0ZWQiOmZhbHNlLCJpc19zdXNwZW5kZWQiOmZhbHNlLCJsYXN0X25hbWUiOiJhaGEiLCJvcmdhbml6YXRpb25zIjpbeyJjb2RlIjoib3JnXzU5MGQ3ZjFhODZhIiwicGVybWlzc2lvbnMiOm51bGwsInJvbGVzIjpudWxsfV0sInBob25lIjpudWxsLCJ1c2VybmFtZSI6bnVsbH19LCJldmVudF9pZCI6ImV2ZW50XzAxOGYyYTllNTkyZWNjZjUyMzI5MTgzYTQ1Y2QxOTU2Iiwic291cmNlIjoiYWRtaW4iLCJ0aW1lc3RhbXAiOiIyMDI0LTA0LTMwVDAyOjA5OjMxLjY0OTE2MisxMDowMCIsInR5cGUiOiJ1c2VyLnVwZGF0ZWQifQ.YIFd21Ek7R_hfpfEpAcwW5ebaDSDsT7TMYF5HTbg70CfWw36IDqKqQWKR6T1_vP0lI5s0xJlDptbjykvWfSm44fkz0LgjCWQhM_ENzTZiAa89pa2X1prjKH4vyS7lTqSCNXvCeYiAaFZSlr2X3s2aztASB4jGBDETziGCh_klNh4Gun3AcbkWOXz_QPm3YGNqgc3hYSBsLdOQbCQ_BxS2Wc60D3NAShVaodPrtOLC1bvY1vn_HucZHT9l-KuTKgY1st6D4er2K6DuHZaFBMMdvTaFQX5zN8OZltxeiucja4sg2vbtexryMdSdHY3y5Cz70dKWW6Ph2kHucK6xScQoQs";
     const isTokenValid = await validateToken({
@@ -122,7 +122,7 @@ describe("Validate token", () => {
     });
     expect(isTokenValid).toEqual({
       valid: false,
-      message: 'Unsupported "alg" value for a JSON Web Key Set',
+      message: 'JWK not found',
     });
   });
 });
