@@ -4,6 +4,7 @@ export type jwtValidationResponse = {
   valid: boolean;
   message: string;
 };
+import { type RSAKey } from 'jsrsasign'
 
 async function verifyJwt(
   token: string,
@@ -37,78 +38,94 @@ async function verifyJwt(
 async function jwtVerify(token: string, jwksJson: string) {
   const [headerEncoded, payloadEncoded, signatureEncoded] = token.split(".");
 
-  console.log("signatureEncoded", headerEncoded)
-  console.log("signatureDecoded", atob(headerEncoded))
-
   const header = JSON.parse(atob(headerEncoded));
   const kid = header.kid;
 
-  const jwks = JSON.parse(jwksJson);
   const jwk = findJWK(jwksJson, kid);
 
   if (!jwk || jwk.kty !== "RSA" || !jwk.n || !jwk.e || jwk.use !== "sig") {
     throw new Error("Invalid JWK RSA key");
   }
 
-  const modulus = base64UrlToBigInt(jwk.n);
-  const exponent = base64UrlToBigInt(jwk.e);
+
 
   if (crypto && crypto.subtle) {
-    const algorithm = { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" };
+    const modulus = base64UrlToBigInt(jwk.n);
+    const exponent = base64UrlToBigInt(jwk.e);
+    const algorithm = {
+      name: "RSASSA-PKCS1-v1_5",
+      hash: { name: "SHA-256" }
+    };
+    
 
     try {
-      // const publicKey = await crypto.subtle.importKey(
-      //   "jwk",
-      //   { kty: "RSA", n: modulus, e: exponent, alg: "RS256" }, 
-      //   algorithm,
-      //   false,
-      //   ["verify"]
-      // );
+      const jwk = {
+        kty: "RSA",
+        n: bigintToBase64url(modulus),
+        e: bigintToBase64url(exponent),
+        alg: "RS256"
+      } as JsonWebKey;
 
-      // const data = headerEncoded + "." + payloadEncoded; // Keep data as string
-      // const signature = base64UrlDecode(signatureEncoded); // Decode to string
-
-      // return await crypto.subtle.verify(algorithm, publicKey, signature, new TextEncoder().encode(data)); 
       const publicKey = await crypto.subtle.importKey(
         "jwk",
-        { kty: "RSA", n: modulus, e: exponent, alg: "RS256" }, 
+        jwk,
         algorithm,
-        false,
+        true,
         ["verify"]
       );
 
-      const data = headerEncoded + "." + payloadEncoded; // Keep data as string
+      const data = headerEncoded + "." + payloadEncoded; 
 
       // Correctly decode and convert signature to ArrayBuffer
       const signatureArrayBuffer = base64UrlDecode(signatureEncoded);
-
-      return await crypto.subtle.verify(
+      const verifyResult = await crypto.subtle.verify(
         algorithm,
         publicKey,
         signatureArrayBuffer, 
         new TextEncoder().encode(data)
-      );
+      )
+      if (!verifyResult) {
+        throw new Error("Signature verification failed");
+      }
+      return verifyResult ;
     } catch (error) {
-      console.error("crypto.subtle verification error:", error);
       throw error; 
     }
   } else {
-    const jsrsasign = require("jsrsasign");
-    const pubKey = jsrsasign.KEYUTIL.getKey(jwk);
-
-    try {
-      const data = headerEncoded + "." + payloadEncoded; // Keep data as string
-      const signature = base64UrlDecode(signatureEncoded).toString('utf8'); // Decode to string
-
-      const isValid = jsrsasign.KJUR.jws.JWS.verifyJWT(token, pubKey, { alg: ['RS256'] });
-      return isValid;
-    } catch (error) {
-      console.error("jsrsasign verification error:", error);
-      throw error;
+    const {KJUR, KEYUTIL, b64utoutf8 } = await import("jsrsasign");
+    const header = JSON.parse(b64utoutf8(headerEncoded))
+    if (header.alg !== "RS256") { // Or your specific algorithm (e.g., HS256)
+      throw new Error("Unsupported signature algorithm: " + header); 
     }
+    const pubKey = KEYUTIL.getKey(jwk) as RSAKey;
+
+    const isValid = KJUR.jws.JWS.verifyJWT(
+      token,
+      pubKey,
+      { alg: ["RS256"] } // Adjust if using a different algorithm
+    );
+    if (!isValid) {
+      throw new Error("Signature verification failed");
+    }
+    return true
   }
 }
 
+
+function bigintToBase64url(value: bigint): string {
+  // Convert bigint to a hex string
+  let hex = value.toString(16);
+  // Ensure even number of characters (pad with 0 if necessary)
+  if (hex.length % 2 !== 0) {
+    hex = '0' + hex;
+  }
+  // Convert hex to Uint8Array
+  const byteArray = new Uint8Array(hex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+  // Convert Uint8Array to base64
+  const base64 = btoa(String.fromCharCode.apply(null, Array.from(byteArray)));
+  // Convert base64 to base64url
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
 
 // Helper functions
 function findJWK(jwksJson: string, kid: string) {
@@ -121,31 +138,8 @@ function findJWK(jwksJson: string, kid: string) {
   throw new Error("JWK not found");
 }
 
-function base64UrlToUint8Array(base64Url) {
-  base64Url = base64Url.replace(/[^A-Za-z0-9\-\_]/g, ''); // Remove all but valid chars
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-  const padding = "=".repeat(4 - (base64.length % 4));
-  const binary = atob(base64 + padding);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes;
-}
 
-// function base64UrlToBigInt(base64Url: string) {
-//   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-//   const padding = "=".repeat(4 - (base64.length % 4));
-//   const binary = atob(base64 + padding);
-//   console.log('binary', binary)
-//   // Convert to hex string without using BigInt constructor
-//   const hex = Array.from(binary, (c) => c.charCodeAt(0).toString(16).padStart(2, "0")).join("");
-//   console.log('hex', hex)
-//   // Parse hex string as BigInt
-//   return BigInt("0x" + hex);
-// }
-
-function base64UrlToBigInt(base64Url) {
+function base64UrlToBigInt(base64Url: string) {
   base64Url = base64Url.replace(/[^A-Za-z0-9\-_]/g, '');
   base64Url += Array.from({ length: (4 - base64Url.length % 4) % 4 }, () => "=").join("");
   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -153,7 +147,7 @@ function base64UrlToBigInt(base64Url) {
   let binary;
   try {
     binary = atob(base64);
-  } catch (error) {
+  } catch (error: Error | any) {
     throw new Error("Invalid Base64 string: " + error.message);
   }
 
@@ -172,31 +166,6 @@ function base64UrlDecode(base64Url: string) {
   return Uint8Array.from(atob(base64Url.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0));
 }
 
-function hexFromBigInt(bigIntValue: string) {
-  return bigIntValue.toString(16).padStart(bigIntValue.toString(2).length / 4, '0');
-}
-
-
-// Example usage (assuming you have a token and jwksJson):
-// const token = "...your JWT token...";
-// const jwksJson = "...your JWKS JSON...";
-
-// validateToken(token, jwksJson)
-//   .then(isValid => {
-//     if (isValid) {
-//       console.log("Token is valid!");
-//       // Process validated token here
-//     } else {
-//       console.error("Token is invalid.");
-//       // Handle invalid token
-//     }
-//   })
-//   .catch(error => {
-//     console.error("Error during validation:", error);
-//     // Handle errors
-//   });
-
-
 
 export const validateToken = async (validateOptions: {
   token?: string;
@@ -208,6 +177,11 @@ export const validateToken = async (validateOptions: {
 
   if (!validateOptions.domain) {
     return { valid: false, message: "Domain is required" };
+  }
+
+  const jwtParts = validateOptions.token.split(".");
+  if (jwtParts.length !== 3) {
+    throw new Error("Invalid JWT format");
   }
 
   return await verifyJwt(validateOptions.token, validateOptions.domain);
