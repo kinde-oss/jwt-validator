@@ -3,7 +3,6 @@ import { describe, it, expect, vi, beforeAll } from "vitest";
 import { createHmac } from "crypto";
 import { validateToken } from "./main";
 import * as utils from "./utils";
-import { before } from "node:test";
 
 function base64UrlEncode(str: string) {
   return Buffer.from(str)
@@ -123,22 +122,22 @@ describe("Validate token", () => {
     });
     expect(isTokenValid).toEqual({
       valid: false,
-      message: 'JWK not found',
+      message: "JWK not found",
     });
   });
 });
 
 describe("Validate token no crypto", () => {
   beforeAll(() => {
-    if (typeof global !== 'undefined' && global.crypto) {
+    if (typeof global !== "undefined" && global.crypto) {
       // Use Object.defineProperty to redefine the 'crypto' property
-      Object.defineProperty(global, 'crypto', {
+      Object.defineProperty(global, "crypto", {
         value: undefined, // Set to undefined to 'clear' crypto
         writable: true, // Allow the property to be rewritten later if needed
-        configurable: true // Allow the property definition itself to be changed, enabling resetting in teardown
+        configurable: true, // Allow the property definition itself to be changed, enabling resetting in teardown
       });
     }
-  })
+  });
 
   it("no token supplied", async () => {
     const isTokenValid = await validateToken({});
@@ -227,7 +226,7 @@ describe("Validate token no crypto", () => {
     });
     expect(isTokenValid).toEqual({
       valid: false,
-      message: 'JWK not found',
+      message: "JWK not found",
     });
   });
 });
