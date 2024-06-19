@@ -1,8 +1,8 @@
 // setToken.test.ts
 import { describe, it, expect, vi, beforeAll } from "vitest";
 import { createHmac } from "crypto";
-import { validateToken } from "./main";
-import * as utils from "./utils";
+import { validateToken } from "../main";
+import * as utils from "../utils";
 
 function base64UrlEncode(str: string) {
   return Buffer.from(str)
@@ -12,7 +12,7 @@ function base64UrlEncode(str: string) {
     .replace(/=+$/, "");
 }
 
-export function jwtSign({
+function jwtSign({
   header,
   payload,
   secret,

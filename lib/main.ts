@@ -134,7 +134,7 @@ function findJWK(jwksJson: string, kid: string) {
       return jwk;
     }
   }
-  throw new Error("JWK not found");
+  throw new Error(`JWK not found${kid ? ` for kid ${kid}` : ""}`);
 }
 
 function base64UrlToBigInt(base64Url: string) {
@@ -189,7 +189,7 @@ export const validateToken = async (validateOptions: {
 
   const jwtParts = validateOptions.token.split(".");
   if (jwtParts.length !== 3) {
-    throw new Error("Invalid JWT format");
+    return { valid: false, message: "Invalid JWT format" };
   }
 
   return await verifyJwt(validateOptions.token, validateOptions.domain);
