@@ -1,7 +1,15 @@
-import { createRemoteJWKSet } from "jose";
-
 export const JWKSCache: Map<string, any> = new Map<string, any>();
 
-export function getJWKS(domain: string) {
-  return createRemoteJWKSet(new URL(`${domain}/.well-known/jwks.json`));
+export async function getJWKS(domain: string) {
+  try {
+    const fetchResult = await fetch(`${domain}/.well-known/jwks.json`);
+    if (!fetchResult.ok) {
+      throw new Error(`Failed to fetch JWKS: ${fetchResult.status} ${fetchResult.statusText}`);
+    }
+    const jwks = await fetchResult.json();
+  } catch (error) {
+    console.error('Error fetching JWKS:', error);
+    throw error; // Rethrow or handle as needed
+  }
+}
 }
