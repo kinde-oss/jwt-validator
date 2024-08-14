@@ -1,8 +1,8 @@
 // setToken.test.ts
 import { describe, it, expect, vi } from "vitest";
 import { createHmac } from "crypto";
-import { validateToken } from "./main";
-import * as utils from "./utils";
+import { validateToken } from "../main";
+import * as utils from "../utils";
 
 function base64UrlEncode(str: string) {
   return Buffer.from(str)
@@ -12,7 +12,7 @@ function base64UrlEncode(str: string) {
     .replace(/=+$/, "");
 }
 
-export function jwtSign({
+function jwtSign({
   header,
   payload,
   secret,
@@ -78,7 +78,7 @@ describe("Validate token", () => {
     });
     expect(isTokenValid).toEqual({
       valid: false,
-      message: "signature verification failed",
+      message: "Signature verification failed",
     });
   });
 
@@ -122,7 +122,7 @@ describe("Validate token", () => {
     });
     expect(isTokenValid).toEqual({
       valid: false,
-      message: 'Unsupported "alg" value for a JSON Web Key Set',
+      message: "JWK not found",
     });
   });
 });
