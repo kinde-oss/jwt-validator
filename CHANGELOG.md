@@ -1,6 +1,18 @@
 # Changelog
 
 
+## 0.2.0...main
+
+[compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.2.0...main)
+
+### 🚀 Enhancements
+
+- Replace jose & add no crypto support ([f950936](https://github.com/kinde-oss/jwt-validator/commit/f950936))
+
+### ❤️ Contributors
+
+- Daniel Rivers ([@DanielRivers](http://github.com/DanielRivers))
+
 ## 0.2.0...feat/replace-jose
 
 [compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.2.0...feat/replace-jose)
