@@ -6,7 +6,7 @@ export type jwtValidationResponse = {
 };
 import { type RSAKey } from "jsrsasign";
 
-// const crypto: Crypto = global.crypto;
+const cryptoLib: Crypto = crypto || window?.crypto || global?.crypto;
 
 async function verifyJwt(
   token: string,
@@ -49,7 +49,7 @@ async function jwtVerify(token: string, jwksJson: string): Promise<boolean> {
     throw new Error("Invalid JWK RSA key");
   }
 
-  if (global.crypto?.subtle) {
+  if (cryptoLib?.subtle) {
     const modulus = base64UrlToBigInt(jwk.n);
     const exponent = base64UrlToBigInt(jwk.e);
     const algorithm = {
@@ -65,7 +65,7 @@ async function jwtVerify(token: string, jwksJson: string): Promise<boolean> {
         alg: "RS256",
       } as JsonWebKey;
 
-      const publicKey = await global.crypto.subtle.importKey(
+      const publicKey = await cryptoLib.subtle.importKey(
         "jwk",
         jwk,
         algorithm,
@@ -77,7 +77,7 @@ async function jwtVerify(token: string, jwksJson: string): Promise<boolean> {
 
       // Correctly decode and convert signature to ArrayBuffer
       const signatureArrayBuffer = base64UrlDecode(signatureEncoded);
-      const verifyResult = await global.crypto.subtle.verify(
+      const verifyResult = await cryptoLib.subtle.verify(
         algorithm,
         publicKey,
         signatureArrayBuffer,
