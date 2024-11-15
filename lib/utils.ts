@@ -13,6 +13,10 @@ export interface JWKS {
   keys: JWK[]; // Array of JWK objects
 }
 
+export function getCryptoLib(): Crypto | undefined {
+  return typeof window !== "undefined" ? window.crypto : globalThis.crypto;
+}
+
 export async function getJWKS(domain: string): Promise<JWKS> {
   const maxRetries = 3;
   let attempts = 0;
