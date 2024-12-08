@@ -15,7 +15,7 @@ dependencies:
 devDependencies:
   '@types/jsrsasign':
     specifier: ^10.5.14
-    version: 10.5.14
+    version: 10.5.15
   '@types/node':
     specifier: ^22.9.0
     version: 22.9.0
@@ -609,8 +609,8 @@ packages:
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
     dev: true
 
-  /@types/jsrsasign@10.5.14:
-    resolution: {integrity: sha512-lppSlfK6etu+cuKs40K4rg8As79PH6hzIB+v55zSqImbSH3SE6Fm8MBHCiI91cWlAP3Z4igtJK1VL3fSN09blQ==}
+  /@types/jsrsasign@10.5.15:
+    resolution: {integrity: sha512-3stUTaSRtN09PPzVWR6aySD9gNnuymz+WviNHoTb85dKu+BjaV4uBbWWGykBBJkfwPtcNZVfTn2lbX00U+yhpQ==}
     dev: true
 
   /@types/node@22.9.0:
