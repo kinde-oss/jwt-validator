@@ -42,7 +42,7 @@ devDependencies:
     version: 2.1.5(@types/node@22.9.0)
   vitest-fetch-mock:
     specifier: ^0.4.2
-    version: 0.4.2(vitest@2.1.5)
+    version: 0.4.5(vitest@2.1.5)
 
 packages:
 
@@ -1643,8 +1643,8 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /vitest-fetch-mock@0.4.2(vitest@2.1.5):
-    resolution: {integrity: sha512-MuN/TCAvvUs9sLMdOPKqdXEUOD0E5cNW/LN7Tro3KkrLBsvUaH7iQWcznNUU4ml+GqX6ZbNguDmFQ2tliKqhCg==}
+  /vitest-fetch-mock@0.4.5(vitest@2.1.5):
+    resolution: {integrity: sha512-nhWdCQIGtaSEUVl96pMm0WggyDGPDv5FUy/Q9Hx3cs2RGmh3Q/uRsLClGbdG3kXBkJ3br5yTUjB2MeW25TwdOA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       vitest: '>=2.0.0'
