@@ -10,7 +10,7 @@ dependencies:
     version: 0.2.0
   jsrsasign:
     specifier: ^11.1.0
-    version: 11.1.0
+    version: 11.1.1
 
 devDependencies:
   '@types/jsrsasign':
@@ -1164,8 +1164,8 @@ packages:
       graceful-fs: 4.2.11
     dev: true
 
-  /jsrsasign@11.1.0:
-    resolution: {integrity: sha512-Ov74K9GihaK9/9WncTe1mPmvrO7Py665TUfUKvraXBpu+xcTWitrtuOwcjf4KMU9maPaYn0OuaWy0HOzy/GBXg==}
+  /jsrsasign@11.1.1:
+    resolution: {integrity: sha512-6w95OOXH8DNeGxakqLndBEqqwQ6A70zGaky1oxfg8WVLWOnghTfJsc5Tknx+Z88MHSb1bGLcqQHImOF8Lk22XA==}
     dev: false
 
   /kolorist@1.8.0:
