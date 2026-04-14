@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@kinde/jwt-decoder':
         specifier: ^0.2.0
-        version: 0.2.0
+        version: 0.2.1
       jsrsasign:
         specifier: ^11.1.0
         version: 11.1.2
@@ -231,8 +231,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@kinde/jwt-decoder@0.2.0':
-    resolution: {integrity: sha512-dqtwCmAvywOVLkkUfp4UbqdvVLsK0cvHsJhU3gDY9rgjAdZhGw0vCreBW6j3MFLxbi6cZm7pMU7/O5SJgvN5Rw==}
+  '@kinde/jwt-decoder@0.2.1':
+    resolution: {integrity: sha512-V6JIC7SzQjxpxcgXrrs5AzJQrLoLgsTvnLVirHDhmSE//LIFz7nxM5Z19Hgm56wKm3L3yDM8QZW/oluflLCrxQ==}
 
   '@microsoft/api-extractor-model@7.33.6':
     resolution: {integrity: sha512-E9iI4yGEVVusbTAqSLetVFxDuBVCVqCigcoQwdJuOjsLq5Hry3MkBgUQhSZNzLCu17pgjk58MI80GRDJLht/1A==}
@@ -1214,7 +1214,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@kinde/jwt-decoder@0.2.0': {}
+  '@kinde/jwt-decoder@0.2.1': {}
 
   '@microsoft/api-extractor-model@7.33.6(@types/node@22.19.17)':
     dependencies:
