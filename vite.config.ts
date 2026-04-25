@@ -11,7 +11,7 @@ export default defineConfig({
       name: "@kinde/jwt-validator",
       fileName: "jwt-validator",
     },
-    target: "modules",
+    target: "es2020",
     outDir: "../dist",
     emptyOutDir: true,
   },
