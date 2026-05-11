@@ -25,13 +25,13 @@
   "devDependencies": {
     "@types/jsrsasign": "^10.5.14",
     "@types/node": "^24.0.0",
-    "@vitest/coverage-v8": "^2.1.5",
+    "@vitest/coverage-v8": "^4.0.0",
     "husky": "^9.1.6",
     "prettier": "^3.8.3",
     "typescript": "^5.6.3",
     "vite": "^8.0.0",
     "vite-plugin-dts": "^4.3.0",
-    "vitest": "^2.1.5",
+    "vitest": "^4.0.0",
     "vitest-fetch-mock": "^0.4.2"
   },
   "dependencies": {
