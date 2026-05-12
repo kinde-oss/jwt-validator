@@ -1,6 +1,21 @@
 # Changelog
 
 
+## 0.4.1...main
+
+[compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.1...main)
+
+### 🏡 Chore
+
+- Ignore renovate.json ([d68aa70](https://github.com/kinde-oss/jwt-validator/commit/d68aa70))
+- Remove package lock ([5e8e60a](https://github.com/kinde-oss/jwt-validator/commit/5e8e60a))
+- Update CODEOWNERS for dependency files ([ce43aeb](https://github.com/kinde-oss/jwt-validator/commit/ce43aeb))
+
+### ❤️ Contributors
+
+- Andre Selton <andre@kinde.com>
+- Daniel Rivers ([@DanielRivers](https://github.com/DanielRivers))
+
 ## 0.3.0...main
 
 [compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.3.0...main)
