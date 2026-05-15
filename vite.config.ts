@@ -12,11 +12,10 @@ export default defineConfig({
       fileName: "jwt-validator",
     },
     target: "es2020",
-    outDir: "../dist",
+    outDir: "dist",
     emptyOutDir: true,
   },
-  root: "lib",
   base: "",
   resolve: { alias: { src: resolve(__dirname, "./lib") } },
-  plugins: [dts({ insertTypesEntry: true, outDir: "../dist" })],
+  plugins: [dts({ insertTypesEntry: true, outDirs: "dist", exclude: ["lib/tests/**"] })],
 });
