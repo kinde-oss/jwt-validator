@@ -17,5 +17,7 @@ export default defineConfig({
   },
   base: "",
   resolve: { alias: { src: resolve(__dirname, "./lib") } },
-  plugins: [dts({ insertTypesEntry: true, outDirs: "dist", exclude: ["lib/tests/**"] })],
+  plugins: [
+    dts({ insertTypesEntry: true, outDirs: "dist", exclude: ["lib/tests/**"] }),
+  ],
 });
