@@ -5,6 +5,23 @@
 
 [compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.1...main)
 
+### 🩹 Fixes
+
+- Remove redundant pnpm version from workflow for action-setup v6 compat ([58df997](https://github.com/kinde-oss/jwt-validator/commit/58df997))
+
+### 🏡 Chore
+
+- Release v0.4.1 ([1eae5ff](https://github.com/kinde-oss/jwt-validator/commit/1eae5ff))
+- **release:** Bump version to v0.4.1 in changelog.md ([80665fe](https://github.com/kinde-oss/jwt-validator/commit/80665fe))
+
+### ❤️ Contributors
+
+- Koosha Owji <koosha.owji@gmail.com>
+
+## 0.4.1...main
+
+[compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.1...main)
+
 ### 🏡 Chore
 
 - Ignore renovate.json ([d68aa70](https://github.com/kinde-oss/jwt-validator/commit/d68aa70))
