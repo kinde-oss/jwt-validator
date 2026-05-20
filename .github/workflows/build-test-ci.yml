@@ -20,8 +20,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
-      - run: pnpm install
-      - run: pnpm lint
+      - run: pnpm --config.minimumReleaseAge=0 install
+      - run: pnpm --config.minimumReleaseAge=0 lint
       - name: Cache pnpm modules
         uses: actions/cache@v5
         with:
@@ -29,8 +29,8 @@ jobs:
           key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
-      - run: pnpm build
-      - run: pnpm test:coverage
+      - run: pnpm --config.minimumReleaseAge=0 build
+      - run: pnpm --config.minimumReleaseAge=0 test:coverage
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v6.0.0
         with:
