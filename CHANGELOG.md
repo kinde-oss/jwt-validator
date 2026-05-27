@@ -1,9 +1,9 @@
 # Changelog
 
 
-## 0.4.1...main
+## 0.4.2
 
-[compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.1...main)
+[compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.1...0.4.2)
 
 ### 🩹 Fixes
 
@@ -18,9 +18,9 @@
 
 - Koosha Owji <koosha.owji@gmail.com>
 
-## 0.4.1...main
+## 0.4.1
 
-[compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.1...main)
+[compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.0...0.4.1)
 
 ### 🏡 Chore
 
