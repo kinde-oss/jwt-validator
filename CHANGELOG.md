@@ -1,6 +1,27 @@
 # Changelog
 
 
+## 0.4.3
+
+[compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.2...0.4.3)
+
+### 🩹 Fixes
+
+- Update tsconfig for TypeScript 6 - Bundler moduleResolution and node types ([eab2010](https://github.com/kinde-oss/jwt-validator/commit/eab2010))
+
+### 🏡 Chore
+
+- ReleaseV0.4.2 ([9f07460](https://github.com/kinde-oss/jwt-validator/commit/9f07460))
+- Update changelog headers ([70361b2](https://github.com/kinde-oss/jwt-validator/commit/70361b2))
+
+### 🤖 CI
+
+- Remove unsupported pnpm config command ([85747cf](https://github.com/kinde-oss/jwt-validator/commit/85747cf))
+
+### ❤️ Contributors
+
+- Koosha Owji <koosha.owji@gmail.com>
+
 ## 0.4.2
 
 [compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.1...0.4.2)
