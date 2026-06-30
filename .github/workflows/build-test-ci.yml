@@ -30,6 +30,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-
       - run: pnpm build
+      - name: Verify type declarations are published
+        run: |
+          test -s dist/main.d.ts
+          test -s dist/utils.d.ts
+          grep -q "validateToken" dist/main.d.ts
       - run: pnpm test:coverage
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v7.0.0
