@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { validateToken } from "../main";
 import * as utils from "../utils";
-import { JWKS } from "../utils";
+import type { JWKS } from "../utils";
 import createFetchMock from "vitest-fetch-mock";
 const fetchMocker = createFetchMock(vi);
 fetchMocker.enableMocks();
