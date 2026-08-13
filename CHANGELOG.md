@@ -1,6 +1,23 @@
 # Changelog
 
 
+## 0.4.4
+
+[compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.3...0.4.4)
+
+### 🩹 Fixes
+
+- **build:** Restore type declarations via tsc and add CI guard ([2b5d2f5](https://github.com/kinde-oss/jwt-validator/commit/2b5d2f5))
+
+### 🏡 Chore
+
+- Release v0.4.3 ([42ba4c9](https://github.com/kinde-oss/jwt-validator/commit/42ba4c9))
+
+### ❤️ Contributors
+
+- Shafal Adhikari <adhikarishafal0@gmail.com>
+- Koosha Owji <koosha.owji@gmail.com>
+
 ## 0.4.3
 
 [compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.2...0.4.3)
