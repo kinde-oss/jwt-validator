@@ -1,6 +1,21 @@
 # Changelog
 
 
+## 0.4.5
+
+[compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.4...0.4.5)
+
+### 🏡 Chore
+
+- Migrate to TypeScript 7 - verbatimModuleSyntax and type-only imports ([4b15ed3](https://github.com/kinde-oss/jwt-validator/commit/4b15ed3))
+- Release v0.4.4 ([f80d078](https://github.com/kinde-oss/jwt-validator/commit/f80d078))
+- Standardize Renovate config with release-age cooldown ([292757a](https://github.com/kinde-oss/jwt-validator/commit/292757a))
+
+### ❤️ Contributors
+
+- Shafal Adhikari <adhikarishafal0@gmail.com>
+- Koosha Owji <koosha.owji@gmail.com>
+
 ## 0.4.4
 
 [compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.3...0.4.4)
