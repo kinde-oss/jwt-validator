@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@kinde/jwt-decoder':
         specifier: ^0.2.0
-        version: 0.2.4
+        version: 0.2.5
       jsrsasign:
         specifier: ^11.1.0
         version: 11.1.5
@@ -76,8 +76,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
 
-  '@kinde/jwt-decoder@0.2.4':
-    resolution: {integrity: sha512-+LA1wab7WzzfGtz5IBHT+k6cHWdF0AxWLn5B8v3n2SRfNflTp5E6766tZnUUPJ82Z3YBaW03ONHpIKMskxeMQg==}
+  '@kinde/jwt-decoder@0.2.5':
+    resolution: {integrity: sha512-du2JjKb560YJCwM1chjkpZBbg6q3v2RX1JfT1Dbhl0QjrmKsWFTZvFja34rdjacps0CjdA4nE3XHPzMDejbg5g==}
 
   '@oxc-project/types@0.144.0':
     resolution: {integrity: sha512-nuhZIOLuI6TFQ32I/WnUx+SCPY7SdSKwgnFHydAuoS1+Z4BRcaP+RRJmGzl9lw+0OFF7UmaESf7KQRXaNLHypg==}
@@ -707,7 +707,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
-  '@kinde/jwt-decoder@0.2.4': {}
+  '@kinde/jwt-decoder@0.2.5': {}
 
   '@oxc-project/types@0.144.0': {}
 
