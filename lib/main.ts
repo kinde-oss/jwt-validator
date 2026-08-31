@@ -4,7 +4,7 @@ export type jwtValidationResponse = {
   valid: boolean;
   message: string;
 };
-import { type RSAKey } from "jsrsasign";
+import type { RSAKey } from "jsrsasign";
 
 // const crypto: Crypto = global.crypto;
 
