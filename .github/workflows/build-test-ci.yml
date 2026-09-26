@@ -37,6 +37,6 @@ jobs:
           grep -q "validateToken" dist/main.d.ts
       - run: pnpm test:coverage
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v7.0.0
+        uses: codecov/codecov-action@v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
