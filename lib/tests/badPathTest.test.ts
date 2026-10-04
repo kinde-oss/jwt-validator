@@ -8,7 +8,7 @@ fetchMocker.enableMocks();
 describe("Generic tests", () => {
   it("fail to load jwks", async () => {
     fetchMocker.mockReject();
-    expect(() => getJWKS("https://danielkinde.kinde.com")).rejects.toThrowError(
+    await expect(getJWKS("https://danielkinde.kinde.com")).rejects.toThrowError(
       "Failed to fetch JWKS after multiple retries",
     );
   });
@@ -20,7 +20,7 @@ describe("Generic tests", () => {
         status: 500,
       },
     ]);
-    expect(() => getJWKS("https://danielkinde.kinde.com")).rejects.toThrowError(
+    await expect(getJWKS("https://danielkinde.kinde.com")).rejects.toThrowError(
       "Failed to fetch JWKS after multiple retries",
     );
   });
