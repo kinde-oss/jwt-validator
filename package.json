@@ -25,12 +25,12 @@
   "devDependencies": {
     "@types/jsrsasign": "^10.5.14",
     "@types/node": "^24.0.0",
-    "@vitest/coverage-v8": "^4.0.0",
+    "@vitest/coverage-v8": "^5.0.0",
     "husky": "^9.1.6",
     "prettier": "^3.8.3",
     "typescript": "^7.0.0",
     "vite": "^8.0.0",
-    "vitest": "^4.0.0",
+    "vitest": "^5.0.0",
     "vitest-fetch-mock": "^0.4.2"
   },
   "dependencies": {
