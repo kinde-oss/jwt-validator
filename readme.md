@@ -39,6 +39,23 @@ If you'd like to contribute to this project, please follow these steps:
 3. Make your changes.
 4. Submit a pull request.
 
+### Development and testing
+
+The development toolchain requires Node.js 22.12 or newer and the pnpm version
+pinned in `package.json`. These are development requirements, not consumer runtime
+requirements.
+
+```bash
+pnpm install --frozen-lockfile
+pnpm lint
+pnpm build
+pnpm test:coverage --run
+```
+
+Tests use Vitest 5. Always await asynchronous assertions such as
+`expect(promise).rejects` and `expect(promise).resolves`; unawaited assertions fail
+the test.
+
 ## License
 
 By contributing to Kinde, you agree that your contributions will be licensed under its MIT License.
