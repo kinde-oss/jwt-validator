@@ -1,6 +1,18 @@
 # Changelog
 
 
+## 0.4.6
+
+[compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.5...0.4.6)
+
+### 🩹 Fixes
+
+- Keep jsrsasign lazily imported ([233fa6d](https://github.com/kinde-oss/jwt-validator/commit/233fa6d))
+
+### ❤️ Contributors
+
+- Koosha Owji <koosha.owji@gmail.com>
+
 ## 0.4.5
 
 [compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.4...0.4.5)
