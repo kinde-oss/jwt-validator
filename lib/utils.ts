@@ -1,4 +1,6 @@
 export const JWKSCache: Map<string, any> = new Map<string, any>();
+export const JWKSFetchedAt: Map<string, number> = new Map<string, number>();
+export const JWKS_REFETCH_INTERVAL_MS = 60_000;
 
 interface JWK {
   e: string; // Exponent (e.g., "AQAB")

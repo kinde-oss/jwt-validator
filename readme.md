@@ -26,6 +26,30 @@ const validationResult: jwtValidationResponse = await validateToken({
 });
 ```
 
+### Optional claim checks
+
+All checks are opt-in. Passing any of the options below also enables `exp` and
+`nbf` validation and rate-limits the re-fetch of signing keys to once per minute
+per domain.
+
+```js
+const validationResult = await validateToken({
+  token: "eyJhbGc...",
+  domain: "http://mybusiness.kinde.com",
+  issuer: "http://mybusiness.kinde.com",
+  audience: "my-api",
+  clockTolerance: 5,
+  algorithms: ["RS256"],
+});
+```
+
+| Option           | Type                 | Description                                                    |
+| ---------------- | -------------------- | -------------------------------------------------------------- |
+| `issuer`         | `string`             | Expected `iss` claim.                                          |
+| `audience`       | `string \| string[]` | Accepted `aud` values. The token must contain at least one.    |
+| `clockTolerance` | `number`             | Seconds of leeway applied to `exp` and `nbf`. Defaults to `0`. |
+| `algorithms`     | `string[]`           | Allowed values for the token header `alg`.                     |
+
 ## Kinde documentation
 
 [Kinde Documentation](https://kinde.com/docs/) - Explore the Kinde docs
