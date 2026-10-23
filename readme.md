@@ -32,6 +32,13 @@ All checks are opt-in. Passing any of the options below also enables `exp` and
 `nbf` validation (a token without `exp` is rejected) and rate-limits the re-fetch of signing keys to once per minute
 per domain.
 
+Without any options, the default WebCrypto path checks only the signature, so an
+expired token is reported as valid. Pass at least one option (for example
+`clockTolerance: 0`) to enforce `exp` and `nbf`.
+
+Because re-fetches are limited to once a minute, a token signed with a newly
+rotated key can be rejected for up to 60 seconds after the last fetch.
+
 ```js
 const validationResult = await validateToken({
   token: "eyJhbGc...",
