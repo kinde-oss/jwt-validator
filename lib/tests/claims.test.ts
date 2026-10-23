@@ -312,3 +312,33 @@ describe("failed JWKS re-fetch", () => {
     expect(utils.getJWKS).toHaveBeenCalledTimes(1);
   });
 });
+
+describe("clockTolerance validation", () => {
+  it.each([
+    ["NaN", Number.NaN],
+    ["Infinity", Number.POSITIVE_INFINITY],
+    ["a negative number", -1],
+    ["a string", "60" as unknown as number],
+  ])("rejects %s before any JWKS work", async (_label, clockTolerance) => {
+    const expired = await sign({ exp: now() - 3600 });
+    const early = await sign({ nbf: now() + 3600 });
+
+    for (const token of [expired, early]) {
+      expect(await validateToken({ token, domain, clockTolerance })).toEqual({
+        valid: false,
+        message: "clockTolerance must be a non-negative finite number",
+      });
+    }
+    expect(utils.getJWKS).not.toHaveBeenCalled();
+  });
+
+  it("still accepts zero and positive tolerances", async () => {
+    const token = await sign({});
+    expect(
+      (await validateToken({ token, domain, clockTolerance: 0 })).valid,
+    ).toBe(true);
+    expect(
+      (await validateToken({ token, domain, clockTolerance: 5 })).valid,
+    ).toBe(true);
+  });
+});

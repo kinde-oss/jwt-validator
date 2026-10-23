@@ -314,5 +314,17 @@ export const validateToken = async (
   }
 
   const { token, domain, ...options } = validateOptions;
+  const { clockTolerance } = options;
+  if (
+    clockTolerance !== undefined &&
+    (typeof clockTolerance !== "number" ||
+      !Number.isFinite(clockTolerance) ||
+      clockTolerance < 0)
+  ) {
+    return {
+      valid: false,
+      message: "clockTolerance must be a non-negative finite number",
+    };
+  }
   return await verifyJwt(token, domain, options);
 };
