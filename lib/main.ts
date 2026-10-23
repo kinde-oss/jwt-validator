@@ -1,43 +1,158 @@
 // import { jwtVerify } from "jose";
-import { JWKSCache, getCryptoLib, getJWKS } from "./utils";
+import {
+  JWKSCache,
+  JWKSFetchedAt,
+  JWKSInFlight,
+  JWKS_REFETCH_INTERVAL_MS,
+  getCryptoLib,
+  getJWKS,
+  type JWKS,
+} from "./utils";
 export type jwtValidationResponse = {
   valid: boolean;
   message: string;
+};
+export type jwtValidationOptions = {
+  issuer?: string;
+  audience?: string | string[];
+  clockTolerance?: number;
+  algorithms?: string[];
 };
 import type { RSAKey } from "jsrsasign";
 
 // const crypto: Crypto = global.crypto;
 
+function hasValidationOptions(options: jwtValidationOptions): boolean {
+  return (
+    options.issuer !== undefined ||
+    options.audience !== undefined ||
+    options.clockTolerance !== undefined ||
+    options.algorithms !== undefined
+  );
+}
+
+function canRefetchJWKS(domain: string): boolean {
+  const fetchedAt = JWKSFetchedAt.get(domain);
+  return (
+    fetchedAt === undefined ||
+    Date.now() - fetchedAt >= JWKS_REFETCH_INTERVAL_MS
+  );
+}
+
+async function loadJWKS(domain: string, force: boolean): Promise<JWKS> {
+  const cached: JWKS | undefined = JWKSCache.get(domain);
+  if (cached && !force) {
+    return cached;
+  }
+
+  const inFlight = JWKSInFlight.get(domain);
+  if (inFlight) {
+    return inFlight;
+  }
+
+  const request = getJWKS(domain)
+    .then((fetched) => {
+      JWKSCache.set(domain, fetched);
+      return fetched;
+    })
+    .catch((error: unknown) => {
+      if (cached) {
+        return cached;
+      }
+      throw error;
+    })
+    .finally(() => {
+      JWKSFetchedAt.set(domain, Date.now());
+      JWKSInFlight.delete(domain);
+    });
+  JWKSInFlight.set(domain, request);
+  return request;
+}
+
 async function verifyJwt(
   token: string,
   domain: string,
+  options: jwtValidationOptions,
   forceJWKSFetch?: boolean,
 ): Promise<jwtValidationResponse> {
-  if (forceJWKSFetch) {
-    JWKSCache.delete(domain);
-  }
-  let JWKS = JWKSCache.get(domain);
+  const optedIn = hasValidationOptions(options);
 
-  if (!JWKS) {
-    JWKS = await getJWKS(domain);
-    JWKSCache.set(domain, JWKS);
-  }
+  const jwks = await loadJWKS(domain, forceJWKSFetch === true);
 
   try {
-    await jwtVerify(token, JSON.stringify(JWKS));
-    return { valid: true, message: "Token is valid" };
+    await jwtVerify(token, JSON.stringify(jwks), optedIn);
   } catch (error: unknown) {
-    if (!forceJWKSFetch) {
-      return verifyJwt(token, domain, true);
+    if (!forceJWKSFetch && (!optedIn || canRefetchJWKS(domain))) {
+      return verifyJwt(token, domain, options, true);
     }
     return {
       valid: false,
       message: error instanceof Error ? error.message : "Unknown Error",
     };
   }
+
+  if (optedIn) {
+    try {
+      validateClaims(token, options);
+    } catch (error: unknown) {
+      return {
+        valid: false,
+        message: error instanceof Error ? error.message : "Unknown Error",
+      };
+    }
+  }
+  return { valid: true, message: "Token is valid" };
 }
 
-async function jwtVerify(token: string, jwksJson: string): Promise<boolean> {
+function validateClaims(token: string, options: jwtValidationOptions): void {
+  const [headerEncoded, payloadEncoded] = token.split(".");
+  const header = JSON.parse(
+    new TextDecoder().decode(base64UrlDecode(headerEncoded)),
+  );
+  const payload = JSON.parse(
+    new TextDecoder().decode(base64UrlDecode(payloadEncoded)),
+  );
+
+  if (options.algorithms && !options.algorithms.includes(header.alg)) {
+    throw new Error("Unsupported signature algorithm");
+  }
+
+  if (options.issuer !== undefined && payload.iss !== options.issuer) {
+    throw new Error("Invalid token issuer");
+  }
+
+  if (options.audience !== undefined) {
+    const expected = Array.isArray(options.audience)
+      ? options.audience
+      : [options.audience];
+    const actual = Array.isArray(payload.aud) ? payload.aud : [payload.aud];
+    if (!actual.some((aud: unknown) => expected.includes(aud as string))) {
+      throw new Error("Invalid token audience");
+    }
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  const tolerance = options.clockTolerance ?? 0;
+
+  if (payload.exp === undefined) {
+    throw new Error("Token has no exp claim");
+  }
+  if (typeof payload.exp !== "number" || now - tolerance >= payload.exp) {
+    throw new Error("Token has expired");
+  }
+
+  if (payload.nbf !== undefined) {
+    if (typeof payload.nbf !== "number" || now + tolerance < payload.nbf) {
+      throw new Error("Token is not yet valid");
+    }
+  }
+}
+
+async function jwtVerify(
+  token: string,
+  jwksJson: string,
+  signatureOnly = false,
+): Promise<boolean> {
   const [headerEncoded, payloadEncoded, signatureEncoded] = token.split(".");
 
   const header = JSON.parse(atob(headerEncoded));
@@ -100,11 +215,13 @@ async function jwtVerify(token: string, jwksJson: string): Promise<boolean> {
     }
     const pubKey = KEYUTIL.getKey(jwk) as RSAKey;
 
-    const isValid = KJUR.jws.JWS.verifyJWT(
-      token,
-      pubKey,
-      { alg: ["RS256"] }, // Adjust if using a different algorithm
-    );
+    const isValid = signatureOnly
+      ? KJUR.jws.JWS.verify(token, pubKey, ["RS256"])
+      : KJUR.jws.JWS.verifyJWT(
+          token,
+          pubKey,
+          { alg: ["RS256"] }, // Adjust if using a different algorithm
+        );
     if (!isValid) {
       throw new Error("Signature verification failed");
     }
@@ -178,10 +295,12 @@ function base64UrlDecode(base64Url: string) {
   );
 }
 
-export const validateToken = async (validateOptions: {
-  token?: string;
-  domain?: string;
-}): Promise<jwtValidationResponse> => {
+export const validateToken = async (
+  validateOptions: {
+    token?: string;
+    domain?: string;
+  } & jwtValidationOptions,
+): Promise<jwtValidationResponse> => {
   if (!validateOptions.token) {
     return { valid: false, message: "Token is required" };
   }
@@ -195,5 +314,18 @@ export const validateToken = async (validateOptions: {
     return { valid: false, message: "Invalid JWT format" };
   }
 
-  return await verifyJwt(validateOptions.token, validateOptions.domain);
+  const { token, domain, ...options } = validateOptions;
+  const { clockTolerance } = options;
+  if (
+    clockTolerance !== undefined &&
+    (typeof clockTolerance !== "number" ||
+      !Number.isFinite(clockTolerance) ||
+      clockTolerance < 0)
+  ) {
+    return {
+      valid: false,
+      message: "clockTolerance must be a non-negative finite number",
+    };
+  }
+  return await verifyJwt(token, domain, options);
 };
