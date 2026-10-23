@@ -1,5 +1,9 @@
 export const JWKSCache: Map<string, any> = new Map<string, any>();
 export const JWKSFetchedAt: Map<string, number> = new Map<string, number>();
+export const JWKSInFlight: Map<string, Promise<JWKS>> = new Map<
+  string,
+  Promise<JWKS>
+>();
 export const JWKS_REFETCH_INTERVAL_MS = 60_000;
 
 interface JWK {

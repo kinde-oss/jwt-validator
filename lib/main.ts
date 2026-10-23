@@ -2,9 +2,11 @@
 import {
   JWKSCache,
   JWKSFetchedAt,
+  JWKSInFlight,
   JWKS_REFETCH_INTERVAL_MS,
   getCryptoLib,
   getJWKS,
+  type JWKS,
 } from "./utils";
 export type jwtValidationResponse = {
   valid: boolean;
@@ -37,6 +39,36 @@ function canRefetchJWKS(domain: string): boolean {
   );
 }
 
+async function loadJWKS(domain: string, force: boolean): Promise<JWKS> {
+  const cached: JWKS | undefined = JWKSCache.get(domain);
+  if (cached && !force) {
+    return cached;
+  }
+
+  const inFlight = JWKSInFlight.get(domain);
+  if (inFlight) {
+    return inFlight;
+  }
+
+  const request = getJWKS(domain)
+    .then((fetched) => {
+      JWKSCache.set(domain, fetched);
+      return fetched;
+    })
+    .catch((error: unknown) => {
+      if (cached) {
+        return cached;
+      }
+      throw error;
+    })
+    .finally(() => {
+      JWKSFetchedAt.set(domain, Date.now());
+      JWKSInFlight.delete(domain);
+    });
+  JWKSInFlight.set(domain, request);
+  return request;
+}
+
 async function verifyJwt(
   token: string,
   domain: string,
@@ -45,19 +77,10 @@ async function verifyJwt(
 ): Promise<jwtValidationResponse> {
   const optedIn = hasValidationOptions(options);
 
-  if (forceJWKSFetch) {
-    JWKSCache.delete(domain);
-  }
-  let JWKS = JWKSCache.get(domain);
-
-  if (!JWKS) {
-    JWKS = await getJWKS(domain);
-    JWKSCache.set(domain, JWKS);
-    JWKSFetchedAt.set(domain, Date.now());
-  }
+  const jwks = await loadJWKS(domain, forceJWKSFetch === true);
 
   try {
-    await jwtVerify(token, JSON.stringify(JWKS), optedIn);
+    await jwtVerify(token, JSON.stringify(jwks), optedIn);
   } catch (error: unknown) {
     if (!forceJWKSFetch && (!optedIn || canRefetchJWKS(domain))) {
       return verifyJwt(token, domain, options, true);

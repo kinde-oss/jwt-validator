@@ -68,6 +68,7 @@ beforeAll(async () => {
 beforeEach(() => {
   utils.JWKSCache.clear();
   utils.JWKSFetchedAt.clear();
+  utils.JWKSInFlight.clear();
   vi.useFakeTimers({ toFake: ["Date"] });
   vi.setSystemTime(new Date("2026-01-01T00:00:00Z"));
   vi.spyOn(utils, "getJWKS").mockResolvedValue(jwks);
@@ -248,5 +249,66 @@ describe("JWKS re-fetch rate limit", () => {
     await validateToken({ token: tampered, ...options });
 
     expect(utils.getJWKS).toHaveBeenCalledTimes(2);
+  });
+
+  it("shares one fetch between parallel failures", async () => {
+    const valid = await sign({});
+    await validateToken({ token: valid, domain, clockTolerance: 0 });
+    vi.setSystemTime(Date.now() + utils.JWKS_REFETCH_INTERVAL_MS + 1000);
+    vi.mocked(utils.getJWKS).mockClear();
+    vi.mocked(utils.getJWKS).mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve(jwks), 10)),
+    );
+
+    const unknownKid = await sign({}, { alg: "RS256", typ: "JWT", kid: "x" });
+    await Promise.all(
+      Array.from({ length: 5 }, () =>
+        validateToken({ token: unknownKid, domain, clockTolerance: 0 }),
+      ),
+    );
+
+    expect(utils.getJWKS).toHaveBeenCalledTimes(1);
+  });
+
+  it("shares one fetch between parallel cold-cache calls", async () => {
+    vi.mocked(utils.getJWKS).mockImplementation(
+      () => new Promise((resolve) => setTimeout(() => resolve(jwks), 10)),
+    );
+    const token = await sign({});
+
+    await Promise.all(
+      Array.from({ length: 5 }, () => validateToken({ token, domain })),
+    );
+
+    expect(utils.getJWKS).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("failed JWKS re-fetch", () => {
+  it.each([
+    ["with options", { clockTolerance: 0 }],
+    ["without options", {}],
+  ])("keeps the cached keys %s", async (_label, options) => {
+    const valid = await sign({});
+    await validateToken({ token: valid, domain, ...options });
+    vi.setSystemTime(Date.now() + utils.JWKS_REFETCH_INTERVAL_MS + 1000);
+    vi.mocked(utils.getJWKS).mockClear();
+    vi.mocked(utils.getJWKS).mockRejectedValueOnce(new Error("network down"));
+
+    const tampered = `${valid.slice(0, -4)}AAAA`;
+    const failed = await validateToken({
+      token: tampered,
+      domain,
+      ...options,
+    });
+    const afterwards = await validateToken({
+      token: valid,
+      domain,
+      ...options,
+    });
+
+    expect(failed.valid).toBe(false);
+    expect(afterwards.valid).toBe(true);
+    expect(utils.getJWKS).toHaveBeenCalledTimes(1);
   });
 });
