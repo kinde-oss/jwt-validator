@@ -50,6 +50,9 @@ const validationResult = await validateToken({
 | `clockTolerance` | `number`             | Seconds of leeway applied to `exp` and `nbf`. Defaults to `0`. |
 | `algorithms`     | `string[]`           | Allowed values for the token header `alg`.                     |
 
+Signatures are always verified as RS256, the only supported algorithm. `algorithms`
+checks the value declared in the token header and cannot enable other algorithms.
+
 ## Kinde documentation
 
 [Kinde Documentation](https://kinde.com/docs/) - Explore the Kinde docs
