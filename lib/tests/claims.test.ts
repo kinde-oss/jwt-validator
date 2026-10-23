@@ -342,3 +342,50 @@ describe("clockTolerance validation", () => {
     ).toBe(true);
   });
 });
+
+describe("clockTolerance validation", () => {
+  it.each([NaN, Infinity, -1, "60" as unknown as number])(
+    "rejects clockTolerance %s",
+    async (clockTolerance) => {
+      const token = await sign({ exp: now() - 3600 });
+      expect(await validateToken({ token, domain, clockTolerance })).toEqual({
+        valid: false,
+        message: "clockTolerance must be a non-negative finite number",
+      });
+    },
+  );
+});
+
+describe("JWKS re-fetch robustness", () => {
+  it("shares one re-fetch between parallel failures", async () => {
+    const good = await sign({ exp: now() + 3600 });
+    await validateToken({ token: good, domain, clockTolerance: 0 });
+    vi.setSystemTime(Date.now() + utils.JWKS_REFETCH_INTERVAL_MS);
+
+    const unknownKid = await sign({}, { alg: "RS256", typ: "JWT", kid: "new" });
+    await Promise.all(
+      Array.from({ length: 5 }, () =>
+        validateToken({ token: unknownKid, domain, clockTolerance: 0 }),
+      ),
+    );
+
+    expect(utils.getJWKS).toHaveBeenCalledTimes(2);
+  });
+
+  it("keeps the cached keys when a re-fetch fails", async () => {
+    const good = await sign({ exp: now() + 3600 });
+    await validateToken({ token: good, domain, clockTolerance: 0 });
+    vi.mocked(utils.getJWKS).mockRejectedValue(new Error("network down"));
+    vi.setSystemTime(Date.now() + utils.JWKS_REFETCH_INTERVAL_MS);
+
+    const tampered = `${good.slice(0, -4)}AAAA`;
+    expect(
+      (await validateToken({ token: tampered, domain, clockTolerance: 0 }))
+        .valid,
+    ).toBe(false);
+    expect(
+      (await validateToken({ token: good, domain, clockTolerance: 0 })).valid,
+    ).toBe(true);
+    expect(utils.getJWKS).toHaveBeenCalledTimes(2);
+  });
+});
