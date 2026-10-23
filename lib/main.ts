@@ -134,10 +134,11 @@ function validateClaims(token: string, options: jwtValidationOptions): void {
   const now = Math.floor(Date.now() / 1000);
   const tolerance = options.clockTolerance ?? 0;
 
-  if (payload.exp !== undefined) {
-    if (typeof payload.exp !== "number" || now - tolerance >= payload.exp) {
-      throw new Error("Token has expired");
-    }
+  if (payload.exp === undefined) {
+    throw new Error("Token has no exp claim");
+  }
+  if (typeof payload.exp !== "number" || now - tolerance >= payload.exp) {
+    throw new Error("Token has expired");
   }
 
   if (payload.nbf !== undefined) {

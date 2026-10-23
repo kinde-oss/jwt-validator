@@ -26,9 +26,10 @@ function encode(value: object | Uint8Array): string {
 }
 
 async function sign(
-  payload: Record<string, unknown>,
+  claims: Record<string, unknown>,
   header: Record<string, unknown> = { alg: "RS256", typ: "JWT", kid },
 ): Promise<string> {
+  const payload = { exp: now() + 3600, ...claims };
   const data = `${encode(header)}.${encode(payload)}`;
   const signature = await crypto.subtle.sign(
     "RSASSA-PKCS1-v1_5",
@@ -387,5 +388,20 @@ describe("JWKS re-fetch robustness", () => {
       (await validateToken({ token: good, domain, clockTolerance: 0 })).valid,
     ).toBe(true);
     expect(utils.getJWKS).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("exp requirement", () => {
+  it("rejects a token without exp when options are supplied", async () => {
+    const token = await sign({ iss: "x", exp: undefined });
+    expect(await validateToken({ token, domain, issuer: "x" })).toEqual({
+      valid: false,
+      message: "Token has no exp claim",
+    });
+  });
+
+  it("still accepts a token without exp when no options are supplied", async () => {
+    const token = await sign({ iss: "x", exp: undefined });
+    expect((await validateToken({ token, domain })).valid).toBe(true);
   });
 });

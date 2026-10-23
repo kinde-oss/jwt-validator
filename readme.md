@@ -29,7 +29,7 @@ const validationResult: jwtValidationResponse = await validateToken({
 ### Optional claim checks
 
 All checks are opt-in. Passing any of the options below also enables `exp` and
-`nbf` validation and rate-limits the re-fetch of signing keys to once per minute
+`nbf` validation (a token without `exp` is rejected) and rate-limits the re-fetch of signing keys to once per minute
 per domain.
 
 ```js
