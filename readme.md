@@ -22,7 +22,7 @@ import { validateToken, type jwtValidationResponse } from "@kinde/jwt-validator"
 
 const validationResult: jwtValidationResponse = await validateToken({
   token: "eyJhbGc...",
-  domain: "http://mybusiness.kinde.com"
+  domain: "https://mybusiness.kinde.com"
 });
 ```
 
@@ -42,8 +42,8 @@ rotated key can be rejected for up to 60 seconds after the last fetch.
 ```js
 const validationResult = await validateToken({
   token: "eyJhbGc...",
-  domain: "http://mybusiness.kinde.com",
-  issuer: "http://mybusiness.kinde.com",
+  domain: "https://mybusiness.kinde.com",
+  issuer: "https://mybusiness.kinde.com",
   audience: "my-api",
   clockTolerance: 5,
   algorithms: ["RS256"],
