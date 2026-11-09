@@ -1,6 +1,35 @@
 # Changelog
 
 
+## 0.5.0
+
+[compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.6...0.5.0)
+
+### 🚀 Enhancements
+
+- Add optional JWT claim validation ([3ae637b](https://github.com/kinde-oss/jwt-validator/commit/3ae637b))
+- Require exp claim when claim validation is opted in ([84ea08b](https://github.com/kinde-oss/jwt-validator/commit/84ea08b))
+
+### 🩹 Fixes
+
+- Share in-flight JWKS fetch and keep cached keys on failed refresh ([8210ad3](https://github.com/kinde-oss/jwt-validator/commit/8210ad3))
+- Reject invalid clockTolerance values ([23e23bf](https://github.com/kinde-oss/jwt-validator/commit/23e23bf))
+
+### 📖 Documentation
+
+- Clarify that algorithms checks only the header alg ([a3feba7](https://github.com/kinde-oss/jwt-validator/commit/a3feba7))
+- Document default-path expiry and key-rotation behavior ([4675bd3](https://github.com/kinde-oss/jwt-validator/commit/4675bd3))
+- Use https in readme examples ([b4857d8](https://github.com/kinde-oss/jwt-validator/commit/b4857d8))
+
+### ✅ Tests
+
+- Add regression tests for clockTolerance and JWKS re-fetch fixes ([2aa9510](https://github.com/kinde-oss/jwt-validator/commit/2aa9510))
+- Cover claim checks on the jsrsasign fallback path ([0ebe6f1](https://github.com/kinde-oss/jwt-validator/commit/0ebe6f1))
+
+### ❤️ Contributors
+
+- Asher Muneer <asher.muneer@whiteboxtech.net>
+
 ## 0.4.6
 
 [compare changes](https://github.com/kinde-oss/jwt-validator/compare/0.4.5...0.4.6)
